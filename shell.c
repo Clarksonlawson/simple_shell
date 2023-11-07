@@ -41,6 +41,8 @@ int main(void)
  */
 void exe_command(char *command)
 {
+	char *input = "#cisfun$ ";
+
 	if (access(command, X_OK) == 0)
 	{
 		pid_t pid = fork();
@@ -64,6 +66,6 @@ void exe_command(char *command)
 	}
 	else
 	{
-		printf("%s: No such file or directory\n", command);
+		printf("%s: No such file or directory\n", input);
 	}
 }
