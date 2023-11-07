@@ -37,7 +37,6 @@ void Input(char *input, size_t size)
  */
 void exeCommand(char *args[])
 {
-	extern char **environ;
 
 	pid_t pid = fork();
 

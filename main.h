@@ -10,7 +10,7 @@
 
 #define MAX_INPUT_SIZE 1024
 #define MAX_ARGS 64
-
+extern char **environ;
 /* Function prototypes */
 void Prompt(void);
 void Input(char *input, size_t size);

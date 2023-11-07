@@ -2,99 +2,68 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <sys/types.h>
 #include <sys/wait.h>
 
-#define MAX_INPUT_SIZE 1024
-
-/* Function prototypes */
-void Prompt(void);
-void Input(char *input, size_t size);
-void exeCommand(const char *command);
-
+#define BUFFER_SIZE 1024
+void exe_command(char *command);
 /**
- * main - Simple shell program
+ * main - Main function for the simple shell
  *
- * Return: Always (0)
+ * Return: 0 on success, otherwise a non-zero error code
  */
+
 int main(void)
 {
-	Prompt();
+	char buffer[BUFFER_SIZE];
+
 	while (1)
 	{
-		char input[MAX_INPUT_SIZE];
+		printf("#cisfun$ ");
 
-		Input(input, MAX_INPUT_SIZE);
+		if (fgets(buffer, sizeof(buffer), stdin) == NULL)
+		{
+			printf("\n");
+			break; /* Handle end of file (Ctrl+D) */
+		}
 
-		if (strlen(input) == 0)
-			continue; /* Ignore input that are empty */
+		buffer[strcspn(buffer, "\n")] = '\0';
 
-		if (strcmp(input, "exit") == 0)
-			exit(EXIT_SUCCESS);
-
-		exeCommand(input);
+		exe_command(buffer);
 	}
 
 	return (0);
 }
-
 /**
- * Prompt - Display the shell prompt
- *
- * Return: Nothing
- */
-void Prompt(void)
-{
-	write(STDOUT_FILENO, "#cisfun$ ", 9);
-}
-
-/**
- * Input - Get user input from stdin
- * @input: Buffer to store user input
- * @size: Size of the input buffer
- *
- * Return: Nothing
- */
-void Input(char *input, size_t size)
-{
-	ssize_t read_size = read(STDIN_FILENO, input, size);
-
-	if (read_size == 0)
-	{
-		write(STDOUT_FILENO, "\n", 1);
-		exit(EXIT_SUCCESS);
-	}
-
-	input[strcspn(input, "\n")] = '\0';
-}
-
-/**
- * exeCommand - Execute the given command in a child process
+ * exe_command - Execute the given command in a child process
  * @command: The command to be executed
  *
  * Return: Nothing
  */
-void exeCommand(const char *command)
+void exe_command(char *command)
 {
-	pid_t pid = fork();
-
-	if (pid == -1)
+	if (access(command, X_OK) == 0)
 	{
-		perror("Error creating child process");
-		exit(EXIT_FAILURE);
-	}
+		pid_t pid = fork();
 
-	if (pid == 0)
-	{
-		if (execlp(command, command, NULL) == -1)
+		if (pid == 0)
 		{
-			fprintf(stderr, "./shell: %s: No such file or directory\n", command);
+			/* Child process */
+			execl(command, command, (char *)NULL);
+			perror("Error");
 			exit(EXIT_FAILURE);
+		}
+		else if (pid < 0)
+		{
+			perror("Error");
+		}
+		else
+		{
+			/* Parent process */
+			wait(NULL);
 		}
 	}
 	else
 	{
-		wait(NULL);
+		printf("%s: No such file or directory\n", command);
 	}
 }
-
