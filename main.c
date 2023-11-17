@@ -1,33 +1,31 @@
-#include "mainHeader.h"
-
+#include "main.h"
 /**
- * main - Entrance to the Program
- * Return: 0 on Program successful ending;
+ * main - The entry to the shell program
+ * @argc: Argument count
+ * @env: Evnironmental variable for shell
+ * Return: 0 on success
  */
 
-int main(void)
+int main(int argc, char **env)
 {
-	char *shell_commands = NULL;
-	char **tokens;
+	
+	char *commands;
+	char **shell_tokens;
+	(void)argc;
+	
 
 	while (1)
 	{
-		int i;
-
-		prompt_shell();
-		shell_commands = read_shell_command();
-		tokens = parse_shell_command(shell_commands);
-		execute_shell_command(tokens);
-
-		/**
-		 * Cleaning up the pointers
-		 */
-		free(shell_commands);
-		for (i = 0; tokens[i] != NULL; i++)
+		if (isatty(STDIN_FILENO))
 		{
-			free(tokens[i]);
+			print_shell_prompt();
 		}
-		free(tokens);
+		commands = read_shell_prompt();
+		shell_tokens = tokenize_shell_inputs(commands);
+		execute_shell_commands(shell_tokens, env);
 	}
+	free(commands);
+	free(shell_tokens);
 	return (0);
 }
+

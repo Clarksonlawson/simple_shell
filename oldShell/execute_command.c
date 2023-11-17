@@ -12,7 +12,7 @@ void execute_shell_command(char **tokens)
 	{
 		if (chdir(tokens[1]) != 0)
 		{
-			perror("Cd");
+			perror(tokens[0]);
 		}
 	}
 	else if (strcmp(tokens[0], "exit") == 0)

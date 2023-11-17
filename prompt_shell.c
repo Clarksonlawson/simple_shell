@@ -1,12 +1,11 @@
-#include "mainHeader.h"
-
+#include "main.h"
 /**
- * prompt_shell - Displays the shell prompts to the user;
- *
+ * print_shell_prompt - shows the shell prompt to user
  */
-void prompt_shell(void)
+
+void print_shell_prompt(void)
 {
-	char prompt[] = "CisFun $ ";
+	char *prompt = "CisFun$ ";
 
 	write(1, prompt, strlen(prompt));
 	fflush(stdout);
